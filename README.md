@@ -1,1 +1,2 @@
 # rhyQTL
+24-hour rhythmic gene expression is essential to maintain physiological homeostasis based on animal studies. However, how SNPs shape oscillating transcriptome in each individual and contribute to variations of human chronophysiology is largely unknown. Here, we defined a new class of genetic variation, termed rhythmic quantitative trait loci (rhyQTL), determining the variation in rhythmic gene expression. Specifically, we identified rhyQTLs and rhyQTL-associated genes (rhyGenes) in 45 human tissues using data from the Genotype Tissue Expression (GTEx) Project.
