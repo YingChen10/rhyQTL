@@ -1,0 +1,46 @@
+tissue_rQTL	FullName	ShortName	Class	GeneralColor	ColorHexadecimal	ColorPlot	tissue_eQTL	EN_TEx
+Brain-Substantianigra	Brain - Substantia nigra	Brain Sub. Nigra	Brain	Purple	E3D834	#4B3E83	Brain_Substantia_nigra	
+Uterus	Uterus	Uterus	Reproductive	Red/brown	7E191B	#7E191B	Uterus	uterus
+Vagina	Vagina	Vagina	Reproductive	Red/brown	80000A	#80000A	Vagina	vagina
+Brain-Amygdala	Brain - Amygdala	Brain Amyg.	Brain	Purple	F8DE7E	#DB7193	Brain_Amygdala	
+Brain-Anteriorcingulatecortex_BA24	Brain - Anterior cingulate cortex (BA24)	Brain Ant. C. C.	Brain	Purple	FADA5E	#B03160	Brain_Anterior_cingulate_cortex_BA24	
+MinorSalivaryGland	Minor Salivary Gland	Salivary	Gland/Nerve	Green	00A572	#00A572	Minor_Salivary_Gland	
+Brain-Hippocampus	Brain - Hippocampus	Brain Hippo.	Brain	Purple	DECD04	#C283B9	Brain_Hippocampus	
+Ovary	Ovary	Ovary	Reproductive	Red/brown	B22222	#B22222	Ovary	ovary
+Prostate	Prostate	Prostate	Reproductive	Red/brown	7C0A02	#7C0A02	Prostate	prostate_gland
+Brain-Spinalcord_cervicalc-1	Brain - Spinal cord (cervical c-1)	Brain Spinal	Brain	Purple	FEDC56	#5E4FA1	Brain_Spinal_cord_cervical_c-1	
+Liver	Liver	Liver	Metabolic	Acqua	4CEDEA	#4CEDEA	Liver	right_lobe_of_liver
+Artery-Coronary	Artery - Coronary	Artery Coronary	Cardio	Red/Orange	BF0A30	#BF0A30	Artery_Coronary	coronary_artery
+Brain-Hypothalamus	Brain - Hypothalamus	Brain Hypo.	Brain	Purple	E8E26D	#AE5FA6	Brain_Hypothalamus	
+AdrenalGland	Adrenal Gland	Adrenal	Gland/Nerve	Green	67926A	#67926A	Adrenal_Gland	adrenal_gland
+SmallIntestine-TerminalIleum	Small Intestine - Terminal Ileum	Intestine	Metabolic	Acqua	0080FF	#0080FF	Small_Intestine_Terminal_Ileum	Peyers_patch
+Brain-FrontalCortex_BA9	Brain - Frontal Cortex (BA9)	Brain Fr. Cortex	Brain	Purple	FCE205	#9684BE	Brain_Frontal_Cortex_BA9	
+Brain-Putamen_basalganglia	Brain - Putamen (basal ganglia)	Brain Putamen	Brain	Purple	F8E473	#7B3393	Brain_Putamen_basal_ganglia	
+Brain-Nucleusaccumbens_basalganglia	Brain - Nucleus accumbens (basal ganglia)	Brain Nuc. Acc.	Brain	Purple	DACA1C	#9E4198	Brain_Nucleus_accumbens_basal_ganglia	
+Pituitary	Pituitary	Pituitary	Gland/Nerve	Green	29AB87	#29AB87	Pituitary	
+Stomach	Stomach	Stomach	Metabolic	Acqua	6593F5	#6593F5	Stomach	stomach
+Colon-Sigmoid	Colon - Sigmoid	Colon Sigmoid	Metabolic	Acqua	00008A	#00008A	Colon_Sigmoid	sigmoid_colon
+Colon-Transverse	Colon - Transverse	Colon Tran.	Metabolic	Acqua	008ECC	#008ECC	Colon_Transverse	transverse_colon
+Brain-Caudate_basalganglia	Brain - Caudate (basal ganglia)	Brain Caudate	Brain	Purple	FFD300	#C71784	Brain_Caudate_basal_ganglia	
+Brain-CerebellarHemisphere	Brain - Cerebellar Hemisphere	Brain Cer. Hem.	Brain	Purple	E9D700	#D04E9C	Brain_Cerebellar_Hemisphere	
+Spleen	Spleen	Spleen	Metabolic	Acqua	81D8D0	#81D8D0	Spleen	spleen
+Esophagus-GastroesophagealJunction	Esophagus - Gastroesophageal Junction	Esophagus G. J.	Metabolic	Blue	1034A6	#1034A6	Esophagus_Gastroesophageal_Junction	gastroesophageal_sphincter
+Pancreas	Pancreas	Pancreas	Metabolic	Acqua	3FE0D0	#3FE0D0	Pancreas	body_of_pancreas
+Breast-MammaryTissue	Breast - Mammary Tissue	Breast	Fat	Yellow/Orange	7F1905	#7F1905	Breast_Mammary_Tissue	breast_epithelium
+Heart-LeftVentricle	Heart - Left Ventricle	Heart L. V.	Cardio	Red/Orange	ED2939	#ED2939	Heart_Left_Ventricle	heart_left_ventricle
+Brain-Cortex	Brain - Cortex	Brain Cortex	Brain	Purple	FFC30B	#CD6CAB	Brain_Cortex	
+Adipose-Visceral_Omentum	Adipose - Visceral (Omentum)	Adipose. Visc.	Fat	Yellow/Orange	FD6A02	#FD6A02	Adipose_Visceral_Omentum	
+Heart-AtrialAppendage	Heart - Atrial Appendage	Heart A. A.	Cardio	Red/Orange	FF0800	#FF0800	Heart_Atrial_Appendage	right_atrium_auricular_region
+Artery-Aorta	Artery - Aorta	Artery Aorta	Cardio	Red/Orange	DF2800	#DF2800	Artery_Aorta	thoracic_aorta
+Lung	Lung	Lung	Metabolic	Blue	7EF9FF	#7EF9FF	Lung	upper_lobe_of_left_lung
+Muscle-Skeletal	Muscle - Skeletal	Muscle	Metabolic	Acqua	73C2FB	#73C2FB	Muscle_Skeletal	
+Esophagus-Mucosa	Esophagus - Mucosa	Esophagus Mucosa	Metabolic	Blue	0F52BA	#0F52BA	Esophagus_Mucosa	esophagus_squamous_epithelium
+Esophagus-Muscularis	Esophagus - Muscularis	Esophagus Musc.	Metabolic	Blue	111E6C	#111E6C	Esophagus_Muscularis	esophagus_muscularis_mucosa
+Skin-NotSunExposed_Suprapubic	Skin - Not Sun Exposed (Suprapubic)	Skin N. S. E.	Skin	Pink	FBAED2	#555185	Skin_Not_Sun_Exposed_Suprapubic	suprapubic_skin
+Brain-Cerebellum	Brain - Cerebellum	Brain Cere.	Brain	Purple	FCD12A	#EC008C	Brain_Cerebellum	
+Testis	Testis	Testis	Reproductive	Red/brown	8D021F	#8D021F	Testis	testis
+Nerve-Tibial	Nerve - Tibial	Nerve Tibial	Gland/Nerve	Green	4CBB17	#4CBB17	Nerve_Tibial	tibial_nerve
+Artery-Tibial	Artery - Tibial	Artery Tibial	Cardio	Red/Orange	D21F3C	#D21F3C	Artery_Tibial	tibial_artery
+Skin-SunExposed_Lowerleg	Skin - Sun Exposed (Lower leg)	Skin S. E.	Skin	Pink	FE7F9C	#786536	Skin_Sun_Exposed_Lower_leg	
+Adipose-Subcutaneous	Adipose - Subcutaneous	Adipose. Sub.	Fat	Yellow/Orange	EF7215	#EF7215	Adipose_Subcutaneous	
+Thyroid	Thyroid	Thyroid	Gland/Nerve	Green	50C878	#50C878	Thyroid	thyroid_gland
