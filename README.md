@@ -16,18 +16,18 @@ This repository contains all source code for the analyses in manuscript "[Human 
 A workstation or computer cluster running a POXIS system (Unix, Linux, or macOS) is required (we used the Linux distribution Ubuntu 20.04.6 LTS).
 ### Software and dependencies
 R and dependent packages
-- R (>= 4.2.0)
-- data.table (1.16.0)
-- tidyverse (2.0.0)
-- dryR (1.0.0)
-- lmtest (0.9.40)
+- `R (>= 4.2.0)`
+- `data.table (1.16.0)`
+- `tidyverse (2.0.0)`
+- `dryR (1.0.0)`
+- `lmtest (0.9.40)`
 
 External software
-- LDSC (v1.0.1)
-- plink 1.9 beta
-- tabix (v1.7)
-- bedtools (>= v2.30.0)
-- samtools (>= v1.10)
+- `LDSC (v1.0.1)`
+- `plink 1.9 beta`
+- `tabix (v1.7)`
+- `bedtools (>= v2.30.0)`
+- `samtools (>= v1.10)`
 
 ## Authors
 Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan (Baylor College of Medicine)
