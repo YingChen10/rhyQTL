@@ -34,7 +34,7 @@ External software
 Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan (Baylor College of Medicine)
 
 ## Citation
-Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan# Human genetic variation determines 24-hour rhythmic gene expression and disease risk, 05 August 2024, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-4790200/v1]
+Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan#. Human genetic variation determines 24-hour rhythmic gene expression and disease risk, 05 August 2024, Research Squar. DOI: [10.21203/rs.3.rs-4790200/v1](https://doi.org/10.21203/rs.3.rs-4790200/v1)
 
 ## Contact
 If you have any comments, suggestions, questions, etc, please feel free to create a GitHub Issue.
