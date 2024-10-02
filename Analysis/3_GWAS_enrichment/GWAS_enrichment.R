@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(data.table)
 library(parallel)
@@ -20,21 +19,22 @@ length(unique(GWAS$`DISEASE/TRAIT`))
 #################################################
 # 1. Only keep European population
 idx <- grep("European", as.character(GWAS$`INITIAL SAMPLE SIZE`), ignore.case = TRUE)
-GWAS <- GWAS[idx, ]
+GWAS.filter <- GWAS[idx, ]
 # 393414
-length(unique(GWAS$`DISEASE/TRAIT`))
+length(unique(GWAS.filter$`DISEASE/TRAIT`))
 # 18129
 
 # 2. remove insignificant SNPs (P value > 5*10-8)
-GWAS$`P-VALUE` <- as.numeric(GWAS$`P-VALUE`)
-GWAS <- filter(GWAS, `P-VALUE` < 5e-8)
+GWAS.filter$`P-VALUE` <- as.numeric(GWAS.filter$`P-VALUE`)
+str(GWAS.filter)
+GWAS.filter <- filter(GWAS.filter, `P-VALUE` < 5e-8)
 # 318783
 length(unique(GWAS.filter$`DISEASE/TRAIT`))
 # 16348
 
 # 3. remove SNPs in the human leukocyte antigen locus (hg38: chr6:29,723,339-33,087,199)
 
-GWAS <- transmute(GWAS,
+GWAS <- transmute(GWAS.filter,
                   SNP=SNPS,
                   CHR_ID = CHR_ID,
                   CHR_POS = CHR_POS,
@@ -122,7 +122,6 @@ length(unique(GWAS.filter$PUBMEDID))
 #   count the number of traits overlapped with rhyQTLs
 #
 #######################################################
-
 file <- list.files('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/00_rQTL_mapping/04_Results/cis_rhyQTL_tissue/', pattern = '.rQTL')
 
 # filtered GWAS
@@ -153,7 +152,7 @@ overlap <- as.data.frame(do.call(rbind, overlap))
 overlap.filter <- filter(overlap, count >= 3)
 
 
-# filtered GWAS with unique trait number
+# filter GWAS with unique trait number
 gwas.filter <- fread('./03_enrich_GWAS/GWAS_enrichment/GWAS_r2024-01-19.filter.txt') %>% as.data.frame(.)
 
 filter <- filter(gwas.filter, Study_accession %in% overlap.filter$Study_accession) %>% select(., Trait_mod, Study_accession, Maped_trait_URI) %>% unique(.)
