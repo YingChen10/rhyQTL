@@ -11,7 +11,6 @@
 This repository contains all source code for the analyses in manuscript "[Human genetic variation determines 24-hour rhythmic gene expression and disease risk](https://www.researchsquare.com/article/rs-4790200/v1)".
 
 ## System requirements
-
 ### Hardware and operating system requirements
 A workstation or computer cluster running a POXIS system (Unix, Linux, or macOS) is required (we used the Linux distribution Ubuntu 20.04.6 LTS).
 ### Software and dependencies
@@ -28,6 +27,16 @@ External software
 - `tabix (v1.7)`
 - `bedtools (>= v2.30.0)`
 - `samtools (>= v1.10)`
+
+## Demo data for running the codes
+The demo input data under the Data/ folder.
+
+**1. rhyQTL mapping**
+(use adipose subcutaneous tissue as an example)
+```
+sh rhyQTL_mapping.sh
+Rscript 0_4_rhyQTL_combine.R
+```
 
 ## Authors
 Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan (Baylor College of Medicine)
