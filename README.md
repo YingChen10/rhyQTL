@@ -5,6 +5,7 @@
 [![R](https://img.shields.io/badge/R-4.2.0-brightgreen)]([https://example.com/R](https://cran.r-project.org/))
 [![bedtools](https://img.shields.io/badge/bedtools-v2.27.1-brightgreen)](https://bedtools.readthedocs.io/en/latest/)
 [![samtools](https://img.shields.io/badge/samtools-v1.10-brightgreen)](https://www.htslib.org/)
+[![RareAPA-Zenodo](https://img.shields.io/badge/Zenodo-brightgreen)](https://zenodo.org/records/11371829)
 
 24-hour biological rhythms are essential to maintain physiological homeostasis. Disruption of these rhythms increases the risks of multiple diseases. The biological rhythms are known to have a genetic basis formed by core clock genes, but how individual genetic variation shapes the oscillating transcriptome and contributes to human chronophysiology and disease risk is largely unknown. Here, we mapped interactions between temporal gene expression and genotype to identify quantitative trait loci (QTLs) contributing to rhythmic gene expression. These newly identified QTLs were termed as rhythmic QTLs (rhyQTLs). Specifically, we identified rhyQTLs and rhyQTL-associated genes (rhyGenes) in 45 human tissues using data from the Genotype Tissue Expression (GTEx) Project. 
 
@@ -28,12 +29,11 @@ External software
 - `bedtools (>= v2.30.0)`
 - `samtools (>= v1.10)`
 
-## Demo data for running the codes
-The demo input data under the Data/ folder.
+## Analyses
 
 **1. rhyQTL mapping**
 (use adipose subcutaneous tissue as an example)
-```
+``` bash
 > sh rhyQTL_mapping.sh
 > Rscript 0_4_rhyQTL_combine.R
 ```
@@ -47,3 +47,5 @@ Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan#. Human genetic variation determ
 ## Contact
 If you have any comments, suggestions, questions, etc, please feel free to create a GitHub Issue.
 
+## License
+This project is covered under the MIT License.
