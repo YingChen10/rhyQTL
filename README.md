@@ -34,8 +34,8 @@ The demo input data under the Data/ folder.
 **1. rhyQTL mapping**
 (use adipose subcutaneous tissue as an example)
 ```
-sh rhyQTL_mapping.sh
-Rscript 0_4_rhyQTL_combine.R
+> sh rhyQTL_mapping.sh
+> Rscript 0_4_rhyQTL_combine.R
 ```
 
 ## Authors
