@@ -12,7 +12,9 @@
 This repository contains all source code for the analyses in manuscript "[Human genetic variation determines 24-hour rhythmic gene expression and disease risk](https://www.researchsquare.com/article/rs-4790200/v1)".
 
 ## Code and data resources
-This repository contains the code for data analyses described in the aforementioned rhyQTL manuscript. Most scripts are written in R or Shell, and the required packages are specified within the code. The Analysis directory includes scripts for tasks such as rhyQTL mapping and enrichment analysis of rhyQTL in CREs and GWAS-tagged SNPs. Data required for the analyses can be found in the Data directory.
+This repository contains the code for data analyses described in the aforementioned rhyQTL manuscript. 
+- The **Analysis** directory includes scripts for tasks such as rhyQTL mapping and enrichment analysis of rhyQTL in CREs and GWAS-tagged SNPs.Most scripts are written in R or Shell, and the required packages are specified within the code.
+- Data required for the analyses can be found in the **Data** directory.
 
 ## System requirements
 ### Hardware and operating system requirements
