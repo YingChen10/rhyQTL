@@ -12,6 +12,7 @@
 This repository contains all source code for the analyses in manuscript "[Human genetic variation determines 24-hour rhythmic gene expression and disease risk](https://www.researchsquare.com/article/rs-4790200/v1)".
 
 ## System requirements
+This repository contains codes for data analyses in above rhyQTL manuscript. Most of the codes are built by R or Shell and all request packages can be found within the codes. 
 ### Hardware and operating system requirements
 A workstation or computer cluster running a POXIS system (Unix, Linux, or macOS) is required (we used the Linux distribution Ubuntu 20.04.6 LTS).
 ### Software and dependencies
