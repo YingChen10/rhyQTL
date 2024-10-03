@@ -135,68 +135,55 @@ for(term.tmp in term){
 
 ####################### Function enrichment 
 
-rQTL.OR.enrichment <- function(all.ori, ld, id){
+rQTL.OR.enrichment <- function(term, id, qtl){
   
-  file <- 'Liver'
-  all <- filter(all.ori, R2 >= ld)
+  all.ori <- fread(paste0('03_enrich_GWAS/GWAScatalog_201401/parent_term_mod_SNP_list_extend_LD0.5/', term, '.LD0.5.ld'))
+  all <- filter(all.ori, R2 >= 1)
   gwas <- length(intersect(unique(id$rs_id_dbSNP151_GRCh38p7), unique(all$SNP_B)))
   bck <- length(unique(id$rs_id_dbSNP151_GRCh38p7))
   
-  or <- mclapply(file, function(x){
-    
-    qtl <- fread(paste0('00_rQTL_mapping/04_Results_p/cis_rhyQTL_tissue/', x, '.rQTL'))
-    
-    rqtl_gwas <- length(intersect(unique(qtl$rsid), unique(all$SNP_B)))
-    rqtl_non_gwas <- length(unique(qtl$rsid)) - rqtl_gwas
-    
-    non_rqtl_gwas <- gwas - rqtl_gwas
-    non_rqtl_non_gwas <- bck - gwas - rqtl_non_gwas
-    
-    num <- c(rqtl_gwas, rqtl_non_gwas, non_rqtl_gwas, non_rqtl_non_gwas)
-    
-    data <- matrix(num, nrow = 2) 
-    # colnames(data) <- c("rqtl", "non_rqtl") 
-    # rownames(data) <- c("motif", "non_motif")
-    
-    OR <- data.frame(rqtl.gwas =  rqtl_gwas, 
-                     rqtl.non.gwas = rqtl_non_gwas,  
-                     non.rqtl.gwas = non_rqtl_gwas, 
-                     non.rqtl.non.gwas = non_rqtl_non_gwas,
-                     odds.ratio = as.numeric(fisher.test(data)$estimate),
-                     p.value = as.numeric(fisher.test(data)$p.value))
-    
-    return(OR)
-    
-  }, mc.cores = 50)
+  rqtl_gwas <- length(intersect(unique(qtl$rsid), unique(all$SNP_B)))
+  rqtl_non_gwas <- length(unique(qtl$rsid)) - rqtl_gwas
   
-  names(or) <- file
-  or <- as.data.frame(do.call(rbind, or)) %>% rownames_to_column(., var = 'tissue')
-  or$LD_cutoff <- ld
+  non_rqtl_gwas <- gwas - rqtl_gwas
+  non_rqtl_non_gwas <- bck - gwas - rqtl_non_gwas
   
-  return(or)
+  num <- c(rqtl_gwas, rqtl_non_gwas, non_rqtl_gwas, non_rqtl_non_gwas)
+  
+  data <- matrix(num, nrow = 2) 
+  # colnames(data) <- c("rqtl", "non_rqtl") 
+  # rownames(data) <- c("motif", "non_motif")
+  
+  OR <- data.frame(parent.term = term,
+                   rqtl.gwas =  rqtl_gwas, 
+                   rqtl.non.gwas = rqtl_non_gwas,  
+                   non.rqtl.gwas = non_rqtl_gwas, 
+                   non.rqtl.non.gwas = non_rqtl_non_gwas,
+                   odds.ratio = as.numeric(fisher.test(data)$estimate),
+                   p.value = as.numeric(fisher.test(data)$p.value))
+  
+  return(OR)
 }  
 
 ### enrichment for different LD score
 id <- fread('Data/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_maf.01.txt')
-term <- list.files(paste0(outdir, 'parent_term_mod_SNP_list/'))
+term.lsit <- list.files(paste0(outdir, 'parent_term_mod_SNP_list/'))
 
-ld <- 1
+qtl <- fread(paste0('00_rQTL_mapping/04_Results_p/cis_rhyQTL_tissue/Liver.rQTL'))
+
 all <- c()
-for(x in term){
-  
-  all.ori <- fread(paste0('03_enrich_GWAS/GWAScatalog_201401/parent_term_mod_SNP_list_extend_LD0.5/', x, '.LD0.5.ld'))
-  result.rqtl <- rQTL.OR.enrichment(all.ori, ld, id)
-  result.rqtl$term <- x
-  all <- rbind(all, result.rqtl)
-  
+for(term in term.list){
+
+    tmp <- rQTL.OR.enrichment(term, id, qtl)
+    all <- rbind(all, tmp)
 }
+
 write.table(all, './Result/03_enrich_GWAS/parent_term_mod_SNP_list_or/parent_term_enrich.txt', quote = F, row.names = F, sep = '\t')
 
 
 
 
 ############################################################# PLOT #############################################
-liver <- fread('./Result/03_enrich_GWAS/parent_term_mod_SNP_list_or/parent_term_enrich.txt')
 
 theme <- theme_bw() +
   theme(axis.line = element_blank(),  
@@ -206,7 +193,7 @@ theme <- theme_bw() +
         axis.title = element_text(size = 8))
 
 
-p1 <- ggplot(data = filter, aes(x = odds.ratio, y = reorder(term, odds.ratio))) + geom_point(size = 0.3, color= 'red') + theme +
+p1 <- ggplot(data = all, aes(x = odds.ratio, y = reorder(parent.term, odds.ratio))) + geom_point(size = 0.3, color= 'red') + theme +
   geom_vline(xintercept = 1) + labs(x = 'Enrichment', y = '') #+ xlim(0, 6)  
 p1
 
