@@ -1,7 +1,15 @@
 #!/bin/bash
 
 # Define parameters
-tissues=("Adipose-Subcutaneous")
+tissues=('Adipose-Visceral_Omentum_subsample.100' \
+'Adipose-Visceral_Omentum_subsample.150' \
+'Adipose-Visceral_Omentum_subsample.200' \
+'Adipose-Visceral_Omentum_subsample.250' \
+'Adipose-Visceral_Omentum_subsample.300' \
+'Adipose-Visceral_Omentum_subsample.350' \
+'Adipose-Visceral_Omentum_subsample.400' \
+'Adipose-Visceral_Omentum_subsample.450')
+
 files=("HLA_split_pos_aa" "HLA_split_pos_ab" "HLA_split_pos_ac" \
        "split_pos_aa" "split_pos_ab" "split_pos_ac" "split_pos_ad" \
        "split_pos_ae" "split_pos_af" "split_pos_ag" "split_pos_ah" \
