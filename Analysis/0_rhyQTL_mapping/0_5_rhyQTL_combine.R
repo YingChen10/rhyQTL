@@ -36,7 +36,7 @@ all <- mclapply(tissue.list, function(tissue){
     regression.tmp$qval <- apply(select(regression.tmp, contains("qval_"), max_amp_idx), 1, function(x) (x[x[3]]))
     regression.tmp <- filter(regression.tmp, pval < 5e-4)
     
-    # hanaove
+    # hanova
     hanova.tmp <- readRDS(paste0('04_hanova/', tissue, '/', file, '.rds'))
     hanova.tmp <- as.data.frame(do.call(rbind,  hanova.tmp))
     hanova.tmp <- hanova.tmp[,c(1:4, 8)]
