@@ -1,4 +1,5 @@
 
+
 library(parallel)
 dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/"
@@ -39,7 +40,8 @@ all <- as.data.frame(do.call(rbind, all))
 
 write.table(all, paste0(dir, cat, '00_rQTL_mapping/00_Meff_input/', tissue, '.txt'), quote = F, sep = '\t', row.names = F)
 
-# ### generate input genotype and phenotype annotation file for Meff
+
+# ### generate input genotype and phenoty annotation file for Meff
 # 
 # ## 1. generate Meff_input files
 # cd /workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL
@@ -55,7 +57,7 @@ write.table(all, paste0(dir, cat, '00_rQTL_mapping/00_Meff_input/', tissue, '.tx
 # sh genotypes.split.sh genotypes.txt genotypes
 # sh genotypes.split.sh gen.positions.txt gen.positions 
 # 
-# # ==================== cat genotype.split.sh =======================
+# # ==================== genotypes.split.sh =======================
 # #!/bin/bash
 # header=$(head -n 1 $1)
 # mkdir $2
@@ -70,12 +72,14 @@ write.table(all, paste0(dir, cat, '00_rQTL_mapping/00_Meff_input/', tissue, '.tx
 # done
 # # =========================== end =================================
 
+### meff estimate tabe live chr6 as example
+# python eigenMT-master/eigenMT.py --CHROM chr6 \
+# --QTL cir_QTL/00_rQTL_mapping/00_Meff_input/Liver.txt \
+# --GEN 01_Meff_input/genotypes/chr6.txt \
+# --GENPOS 01_Meff_input/gen.positions/chr6.txt \
+# --PHEPOS 01_Meff_input/phe.positions.txt 
+# --OUT cir_QTL/00_rQTL_mapping/00_Meff_output/Liver/chr6.txt
 
-##################
-#
-# plot
-#
-#################
 all <- data.frame()
 file.list <- list.files('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/00_rQTL_mapping/00_Meff_output', pattern = '.txt')
 for(x in file.list){
@@ -83,9 +87,9 @@ for(x in file.list){
   
   meff <- fread(paste0('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/00_rQTL_mapping/00_Meff_output/', x))
   meff$tissue <- gsub(".txt", "", x)
-  
+
   all <- rbind(all, meff)
-  
+    
 }
 
 median <- as.data.frame(all %>% group_by(tissue) %>% summarise(median.meff = median(Meff), mean.meff = mean(Meff)))
@@ -132,3 +136,4 @@ pdf("/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/13_
 print(p1)
 print(p2)
 dev.off()
+
