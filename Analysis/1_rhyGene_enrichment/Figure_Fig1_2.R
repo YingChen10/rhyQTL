@@ -86,7 +86,7 @@ for(x in file){
 #####################################################################################################
 
 ###########################################################
-# 1. calculate circadian gene number identified in Science
+# 1. calculate previously identified circadian gene number
 ###########################################################
 
 file <- list.files('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/GTEx_nor_expression/', pattern = 'txt')
