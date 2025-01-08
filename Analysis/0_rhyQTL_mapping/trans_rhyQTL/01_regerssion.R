@@ -167,7 +167,6 @@ r <- lapply(snv$ID, function(x){
     
   }
   
-  HANOVA.no.norm  = as.numeric(HANOVA(t(e0), t(e1), t0, t1, 24, norm = FALSE)$p.value)
   HANOVA.norm  = as.numeric(HANOVA(t(e0), t(e1), t0, t1, 24, norm = TRUE)$p.value)
   
   #### integrate results for all genotyoes
@@ -186,30 +185,10 @@ r <- lapply(snv$ID, function(x){
   results$max_amp_idx <- apply(select(results, contains("amp.c_")), 1, function(x) which.max(x))
   results$pval <- apply(select(results, contains("pval_"), max_amp_idx), 1, function(x) (x[x[3]]))
   results$qval <- apply(select(results, contains("qval_"), max_amp_idx), 1, function(x) (x[x[3]]))
-  results$HANOVA.no.norm <- HANOVA.no.norm
   results$HANOVA.norm <- HANOVA.norm
   results$HANOVA.norm.qval <- p.adjust(results$HANOVA.norm, "BH")
   results <- filter(results, pval <= 0.01 & max_amp > 0.5)
   
-  # ### get significant results and Run dryR
-  # dryR_test <- intersect(row.names(results[rowSums(select(results, contains('pval')) < 0.01) > 0,]), row.names(results[rowSums(select(results, contains('amp.c')) > 0.5) > 0,]))
-  # 
-  # if (length(dryR_test) > 0){
-  #   
-  #   expression.test <- na.omit(expression[dryR_test,])
-  #   dryList = drylm(select(expression.test, row.names(geno)), as.character(geno$genotype), time$hour[match(row.names(geno), time$SUBJ.ID)])
-  #   
-  #   dryResults <- dryList[["parameters"]] # coefficients: phase, amplitude and mean for each group
-  #   dryResults <- filter(dryResults, chosen_model != 1 & chosen_model != 4)
-  #   
-  #   subset <- results[row.names(dryResults), ]
-  #   dryResults <- cbind(subset, dryResults)
-  #   dryResults$sample.size_test = tmp_snv$size2test
-  # }else{
-  #   
-  #   dryResults <- NULL
-  # }
-  # 
   return.results <- list(tmp_snv = tmp_snv, dryResults = results)
   return(return.results)
 })
