@@ -6,10 +6,11 @@ suppressMessages(library("dryR"))
 suppressMessages(library("lmtest"))
 
 ############################# parameters #########################
-dir <- "Projects/rQTL/"
+dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/00_rQTL_mapping/00_Genotype/"
-outdir <- paste0(dir, 'cis_QTL/00_rQTL_mapping/01_Rhythm_regression_filter/')
-logoutdir <-  paste0(dir, 'cis_QTL/Log/01_Rhythm_regression_filter/')
+
+outdir <- paste0(dir, 'cis_QTL/00_rQTL_mapping/01_Rhythm_regression/')
+logoutdir <-  paste0(dir, 'cis_QTL/Log/01_Rhythm_regression/')
 
 args <- commandArgs(trailingOnly = TRUE)
 tissue <- args[1]
@@ -20,10 +21,10 @@ pos_file <- args[2]
 
 
 if (!file.exists(paste0(outdir, tissue))) {
-  dir.create(paste0(outdir, tissue))}
+  dir.create(paste0(outdir, tissue), recursive = TRUE)}
 
 if (!file.exists(paste0(logoutdir, tissue))) {
-  dir.create(paste0(logoutdir, tissue))}
+  dir.create(paste0(logoutdir, tissue), recursive = TRUE)}
 a <- Sys.time()
 write.table(a, paste0(logoutdir, tissue, '/', pos_file), quote = F, row.names = F, col.names = F)
 
@@ -51,8 +52,8 @@ Regression <- function(all_results, time, expression){
   
   geno_regression <- list()
   
-  for(i in 1:length(all_results)){
-    
+for(i in 1:length(all_results)){
+ 
     gene_list <- all_results[[i]]
     gene <- names(all_results)[i]
     
@@ -63,11 +64,11 @@ Regression <- function(all_results, time, expression){
                         time = time$hour[match(rownames(geno_tmp), time$SUBJ.ID)],
                         x = as.numeric(select(filter(expression, EnsemblID == gene), row.names(geno_tmp))))
       
-      # calculate sample size for each genotype subgroup and sort genotype subgroup anccording to sample (from large to small) 
+      # calculate sample size for each genotype and sort genotype anccording to sample (from large to samll) 
       num <- as.data.frame(table(factor(tmp$genotype, levels = 0:2)))
       num <- num[order(-num$Freq), ]
       
-      # fit rhythmicity in each genotype subgroup
+      # fit rhythmicity in each genotype
       regression <- num$Freq
       for(j in 1:2){
         
@@ -99,33 +100,35 @@ if(nrow(regression) != 0){geno_regression[[gene]] <- regression}
 ######################################################################
 
 
+
 ###### import files ##############
 ### import time information
 time <- fread(paste0(dir, 'GTEx_donor_time_science.txt'))
 
 # import expression file
-expression <- fread(paste0(dir,'GTEx_nor_expression/',tissue, '.txt'))
-expression <- as.data.frame(expression)
-expression <- expression[,1:(ncol(expression) - 34)]
-expression$EnsemblID <- sapply(strsplit(expression$EnsemblID, '_'), "[", 1)
-names(expression)[2:ncol(expression)] <- sapply(strsplit(names(expression)[2:ncol(expression)], '\\.'), "[", 2)
+expression <- read.table(paste0(dir,'00_data/CPM_covariate_remove/', tissue, '.txt'), header = T)
+names(expression) <- str_split_fixed(names(expression), '\\.', 2)[ ,2]
+expression$EnsemblID <- str_split_fixed(row.names(expression), '_', 2)[ ,1]
+
 
 # import genotype information
 geno <- readRDS(paste0(dir, cat, tissue, '/', pos_file, '.rds'))
 
+
 period <- 24
 name <- c("pval","phase.s","amp.c","mu.(Intercept)","a.c","b.s","period","R2")
 ########################################################## Main ###############################################
-
 ######################### 1. Regression ################################
 filter.result <- Regression(geno, time, expression)
+
 saveRDS(filter.result, paste0(outdir, tissue, '/', pos_file, '.rds'))
+
 ###############
 
 
 filter.geno.list <- c()
 for(i in 1:length(filter.result)){
-
+#for(i in 1:10){
   
   gene <- names(filter.result)[i]
   fit.filter <- filter.result[[gene]]
@@ -149,5 +152,5 @@ for(i in 1:length(filter.result)){
 saveRDS(filter.geno.list, paste0(outdir, tissue, '/', pos_file, '.geno.rds'))
 
 b <- data.frame(tissue = tissue, file = pos_file, s = a, e = Sys.time(), gene.filter = length(filter.geno.list))
-write.table(b, paste0(logoutdir, tissue, '/', pos_file, '.final'), quote = F, row.names = F, col.names = F)
+write.table(b, paste0(logoutdir, tissue, '/', pos_file, '.complete'), quote = F, row.names = F, col.names = F)
 
