@@ -3,15 +3,21 @@ library('tidyverse')
 library('data.table')
 library('parallel')
 
-setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/00_rQTL_mapping/')
+setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
+
+dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
+cat <- "cis_QTL/"
 tissue.list <- list.dirs('00_Genotype')[-1] %>% gsub('00_Genotype/', '', .)
+
+
 
 ###############
 #
 # get numbers in Figure 1
 #
 ###############
-library(paralle)
+
+################################################## fig1a step 3 ##################
 file <- list.dirs(paste0(dir, cat, '00_rQTL_mapping/00_Genotype'))
 tissue <- gsub(paste0(dir, cat, '00_rQTL_mapping/00_Genotype/'), '', file)[-1]
 
@@ -46,17 +52,58 @@ all <- mclapply(tissue, function(tissue.tmp){
   
   return(count)
   
-}, mc.cores = 5)
+}, mc.cores = 25)
 
 all <- as.data.frame(do.call(rbind, all))
 
 combine <- as.data.frame(all %>% group_by(tissue) %>% summarise(gene.num = sum(gene.num), id.num = sum(id.num), pair.num = sum(pair.num)))
-head(combine)
+
 
 median(combine$gene.num)
-# 3231
+# 3644
 median(combine$pair.num)
-# 620356
+# 741626
+
+################################################## fig1a step 4 ##################
+dir <- '/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/'
+cat <- 'cis_QTL/'
+
+dir_pre <- paste0(dir, cat, '13_Results/')
+plot_dir_pre <- paste0(dir, cat, '13_Figures/')
+if (!file.exists(dir_pre)) {dir.create(dir_pre, recursive = TRUE)}
+if (!file.exists(plot_dir_pre)) {dir.create(plot_dir_pre, recursive = TRUE)}
+
+file <- list.dirs(paste0(dir, cat, '00_rQTL_mapping/00_Genotype'))
+tissue <- gsub(paste0(dir, cat, '00_rQTL_mapping/00_Genotype/'), '', file)[-1]
+
+num <- c()
+for(x in tissue){
+  
+  tmp <- fread(paste0(dir_pre, '/00_all_rhyQTL/', x, '.txt'))
+  num <- data.frame(
+    tissue = x,
+    rhyQTL.num = length(unique(tmp$ID)),
+    rhyGene.num = length(unique(tmp$gene)),
+    pair.num = nrow(tmp)) %>% rbind(num, .)
+  
+}
+
+# get numbers in Fig1 
+median(num$rhyQTL.num)
+# 65130
+median(num$rhyGene.num)
+# 2044
+median(num$pair.num)
+# 67103
+
+color <- fread('Data/color_annotation_v3.txt')
+count <- merge(num, color, by.x = 'tissue', by.y = 'tissue_rQTL')
+count <- count[order(count$rhyGene.num),]
+count$tissue <- factor(count$tissue, levels = count$tissue)
+count$ShortName <- factor(count$ShortName, levels = count$ShortName)
+
+write.table(count, paste0(dir_pre,  '00_rhyGene.rhyQTL.num.txt'), quote = F, sep = '\t', row.names = F)
+
 
 #####################################################################################
 #
@@ -66,7 +113,7 @@ median(combine$pair.num)
 file <- list.files('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/GTEx_nor_expression')
 file <- file[-match("Kidney-Cortex.txt", file)]
 
-outdir <- paste0(dir, cat, '13_Results/01_expr_gene_bck/') 
+outdir <- paste0(dir_pre, '01_expr_gene_bck/') 
 if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
 
 for(x in file){
@@ -86,7 +133,7 @@ for(x in file){
 #####################################################################################################
 
 ###########################################################
-# 1. calculate previously identified circadian gene number
+# 1. get previouly identified rhythmic gene list
 ###########################################################
 
 file <- list.files('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/GTEx_nor_expression/', pattern = 'txt')
@@ -96,6 +143,10 @@ tissue <- tissue[tissue != 'Kidney-Cortex']
 
 dir <- '/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/'
 cir_gene <- c()
+
+outdir <- paste0(dir_pre, '01_rhyGene_circadian_gene_overlap/')
+if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
+
 sample_size <- c()
 for(x in tissue){
   # input expression file
@@ -111,17 +162,17 @@ for(x in tissue){
 cir_gene_num <- as.data.frame(table(cir_gene$tissue))
 names(cir_gene_num) <- c('tissue', 'cir_gene_number')
 merge <- merge(cir_gene_num, sample_size, by = 'tissue')
-write.table(merge, '01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circadian_gene_number_from_Science.txt', quote = F, sep = '\t', row.names = F)
-write.table(cir_gene, '01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circadian_gene_list.txt', quote = F, sep = '\t', row.names = F)
+write.table(merge, paste0(outdir, 'circadian_gene_number_from_Science.txt'), quote = F, sep = '\t', row.names = F)
+write.table(cir_gene, paste0(outdir, 'circadian_gene_list.txt'), quote = F, sep = '\t', row.names = F)
 
 setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
 
-cir_gene <- read.table('01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circadian_gene_list.txt', header = T)
+cir_gene <- read.table(paste0(outdir, 'circadian_gene_list.txt'), header = T)
 annot <- read.table('../gencode.v26.GRCh38.genes.annot')
 annot <- unique(annot[, c('V6', "V7")])
 names(annot) <- c('gene', 'name')
 cir_gene <- merge(cir_gene, annot, by = 'gene')
-write.table(cir_gene, '01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circadian_gene_names.list.txt', sep = '\t', quote = F, row.names = F)
+write.table(cir_gene,  paste0(outdir, 'circadian_gene_names.list.txt'), sep = '\t', quote = F, row.names = F)
 
 #######################################################
 #
@@ -129,11 +180,12 @@ write.table(cir_gene, '01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circa
 #
 #######################################################
 setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
-rgene <- read.table('13_Results/00_tissue_rhyGene.name.list', header = T)
-cir_gene <- read.table('01_eGene_sGene_overlap/rGene_circadian_gene_overlap/circadian_gene_names.list.txt', header = T)
+outdir <- paste0(dir_pre, '01_rhyGene_circadian_gene_overlap/')
 
-outdir <- paste0(dir, cat, '13_Results/01_rhyGene_circadian_gene_overlap/')
-if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
+rgene <- read.table(paste0(dir_pre, '00_tissue_rhyGene.name.list'), header = T)
+cir_gene <- read.table(paste0(outdir, 'circadian_gene_names.list.txt'), header = T)
+
+
 
 count <- c()
 for (x in unique(cir_gene$tissue)){
@@ -171,12 +223,16 @@ for (x in unique(cir_gene$tissue)){
   
 }
 
+# number in fig2d
+filter(count, tissue == "Heart-LeftVentricle")
+# tissue rhy.gene.specific rgene.specific common
+# Heart-LeftVentricle               121           2748    668
 
 # calculate percentage
 count$percent.new.rhy.gene <- count$rgene.specific/(count$rhy.gene.specific+count$rgene.specific+count$common) * 100
 count$percent.rhy.gene.genotype.specific <- count$rgene.specific/(count$rhy.gene.specific+count$common) 
 median(count$percent.rhy.gene.genotype.specific)
-
+# 3.48289
 write.table(count, paste0(outdir, '01_rhyGene.cirGene.count.txt'), quote = F, sep = '\t', row.names = F)
 
 library(data.table)
@@ -185,7 +241,6 @@ count <- fread(paste0(outdir, '01_rhyGene.cirGene.count.txt'))
 count$new_rhythmic_genotype <- count$rgene.specific/(count$rhy.gene.specific + count$common)
 
 median(count$new_rhythmic_genotype)
-
 
 
 count <- count[order(-count$rgene.specific),]
@@ -220,7 +275,7 @@ p <- ggplot(data = color, aes(x = FullName, y = 1, fill = FullName)) + geom_tile
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 p
 
-plot.outdir <- paste0(dir, cat, '13_Figures/01_rhyGene_circadian_gene_overlap/')
+plot.outdir <- paste0(plot_dir_pre, '/01_rhyGene_circadian_gene_overlap/')
 if (!file.exists(plot.outdir)) {dir.create(plot.outdir, recursive = TRUE)}
 library('grid')
 pdf(paste0(plot.outdir,'rhyGene_rhyGene_overlap.pdf'), width = 5, height = 3.5)
@@ -228,52 +283,32 @@ print(p)
 print(pp1)
 dev.off()
 
+# venn 
+rgene <- read.table(paste0(dir_pre, '00_tissue_rhyGene.name.list'), header = T)
+cir_gene <- read.table(paste0(dir_pre, '01_rhyGene_circadian_gene_overlap/circadian_gene_names.list.txt'), header = T)
+
+
+library(ggvenn)
+pdf(paste0(plot_dir_pre, "01_rhyGene_circadian_gene_overlap/rhyGene_circadian_gene_overlap.pdf"), width = 3.6, height = 3.6, useDingbats = F)
+for(x in unique(rgene$tissue)){
+  y <- list(rGene = rgene$gene[rgene$tissue == x],
+            cir_gene = cir_gene$gene[cir_gene$tissue == x])
+  print(ggvenn(y, fill_color = c("#0073C2FF", "#EFC000FF"),stroke_size = 0.5, set_name_size = 4, show_percentage = FALSE),vp = viewport(1, 1, x=.5, y=.5))
+  grid.text(x, x = unit(0.5, "npc"), y = unit(0.9, "npc"), gp = gpar(fontsize = 12, fontface = "bold"))
+  grid.newpage()
+}
+dev.off()
 
 ######################################################################################################
 #
 #                         Figure 2a. # of rhyQTLs and rhyGenes
 #
 #####################################################################################################
-#rm(list = ls()) 
-library('tidyverse')
-library(parallel)
-library('data.table')
-setwd('~/Projects/Project03_human_circadian/rQTL/cis_QTL/')
 
-dir <- '/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/'
-cat <- 'cis_QTL/'
-
-file <- list.dirs(paste0(dir, cat, '00_rQTL_mapping/00_Genotype'))
-tissue <- gsub(paste0(dir, cat, '00_rQTL_mapping/00_Genotype/'), '', file)[-1]
-
-num <- c()
-for(x in tissue){
-  
-  tmp <- fread(paste0(dir, cat, '13_Results/00_all_rhyQTL/', x, '.txt'))
-  num <- data.frame(
-    tissue = x,
-    rhyQTL.num = length(unique(tmp$ID)),
-    rhyGene.num = length(unique(tmp$gene)),
-    pair.num = nrow(tmp)) %>% rbind(num, .)
-  
-}
-
-# get numbers in Fig1 
-median(num$rhyQTL.num)
-# 51364
-median(num$rhyGene.num)
-# 2047
-median(num$pair.num)
-# 52485
-
-color <- fread('Data/color_annotation_v3.txt')
-count <- merge(num, color, by.x = 'tissue', by.y = 'tissue_rQTL')
+count <-  fread(paste0(dir_pre, '00_rhyGene.rhyQTL.num.txt')) %>% as.data.frame()
 count <- count[order(count$rhyGene.num),]
 count$tissue <- factor(count$tissue, levels = count$tissue)
 count$ShortName <- factor(count$ShortName, levels = count$ShortName)
-
-write.table(count, '/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/13_Results/00_rhyGene.rhyQTL.num.txt', quote = F, sep = '\t', row.names = F)
-
 
 library(ggrepel)
 library(patchwork)
@@ -334,11 +369,14 @@ p3 <- ggplot(data = count, aes(x = 1, y = tissue, fill = samplesize)) + geom_til
 p3 
 
 library(grid)
-pdf('./13_Figures/00_Figure_rhyGene.rhyQTL.number.pdf', width = 14, height = 5.2, useDingbats = T)
+pdf(paste0(plot_dir_pre, '00_Figure_rhyGene.rhyQTL.number.pdf'), width = 14, height = 5.2, useDingbats = T)
 print(p1, vp=viewport(.2, 1, x = .2, y = .5))
 print(p2, vp=viewport(.2, 1, x = .5, y = .5))
 print(p3, vp=viewport(.32, 1, x = .8, y = .5))
 dev.off()
+
+
+
 
 ####################################################################################################
 #
@@ -358,9 +396,8 @@ library(grid)
 setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
 
 # classify rGenes
-gene.list<- fread('13_Results/00_tissue_rhyGene.name.list')
+gene.list<- fread(paste0(dir_pre, '00_tissue_rhyGene.name.list'))
 common <- as.data.frame(table(gene.list$name))
-head(common)
 names(common) <- c('name', 'Tissue.num')
 
 annot <- read.table('../gencode.v26.GRCh38.genes.annot')
@@ -368,7 +405,6 @@ annot <- unique(annot[, c('V6', "V7")])
 names(annot) <- c('rhyGene', 'name')
 
 common <- merge(common, annot, by = 'name')
-
 common <- common[order(-common$Tissue.num),]
 
 common$rhyGene.type <- ifelse(common$Tissue.num >= 20, 'Ubiquitous', 'Intermediately specific')
@@ -379,18 +415,22 @@ share.num <- as.data.frame(table(common$rhyGene.type))
 share.num$ratio <- share.num$Freq/sum(share.num$Freq)
 share.num
 
+# Var1 Freq      ratio
+# 1 Intermediately specific 9759 0.75289307
+# 2         Tissue specific 2409 0.18585095
+# 3              Ubiquitous  794 0.06125598
 
-outdir <- paste0(dir, cat, '13_Results/02_tissue_sharing_rhyGene/')
+outdir <- paste0(dir_pre, '02_tissue_sharing_rhyGene/')
 if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
 write.table(common, paste0(outdir, 'tissue_sharing_rhyGenes.txt'), quote = F, sep = '\t', row.names = F)
 write.table(unique(filter(common, Tissue.num >= 20)$name), paste0(outdir, 'Ubiquitous.rhyGene.txt'), quote = F, sep = '\t', row.names = F, col.names = F)
 
 
 ### tissue specific rhyGenes
-outdir <- paste0(dir, cat, '13_Results/02_tissue_sharing_rhyGene/tissue_specific_rhyGene/')
+outdir <- paste0(dir_pre, '02_tissue_sharing_rhyGene/tissue_specific_rhyGene/')
 if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
 
-gene.list <- fread('13_Results/00_tissue_rhyGene.name.list')
+gene.list <- fread(paste0(dir_pre, '00_tissue_rhyGene.name.list'))
 for(x in unique(gene.list$tissue)){
   
   write.table(intersect(gene.list$name[gene.list$tissue == x], common$name[common$Tissue.num == 1]),
@@ -404,7 +444,7 @@ for(x in unique(gene.list$tissue)){
 #
 ##################
 # input is rhyGene or not?
-gene.list <- fread('13_Results/00_tissue_rhyGene.name.list')
+gene.list <- fread(paste0(dir_pre, '00_tissue_rhyGene.name.list'))
 names(gene.list) <- c('rhyGene', 'name','tissue')
 gene.list$yorn <- 1
 gene.list.convert <- spread(gene.list, tissue, yorn)
@@ -420,6 +460,8 @@ names(num) <- c('tissue', 'rhyGene.num')
 num <- num[order(num$rhyGene.num),]
 num$tissue <- factor(num$tissue, levels = num$tissue)
 tissue_order <- num$tissue 
+
+
 r$tissue <- factor(r$tissue, levels = tissue_order)
 
 
@@ -429,7 +471,7 @@ gene_order1 <- common$rhyGene[order(-common$Tissue.num[common$Tissue.num >= 2])]
 
 
 # 2. rank tissue specific rhyGenes according to the tissue rand
-common <- fread('13_Results/02_tissue_sharing_rhyGene/tissue_sharing_rhyGenes.txt')
+common <- fread(paste0(dir_pre, '/02_tissue_sharing_rhyGene/tissue_sharing_rhyGenes.txt'))
 tissue_specific <- filter(common, Tissue.num == 1)
 
 # get gene order in only 1 tissue
@@ -444,7 +486,7 @@ for(x in rev(tissue_order)){
 }
 
 # output tissue specific genes
-write.table(tissue_specific_rhyGene, '13_Results/02_tissue_sharing_rhyGene/tissue_specific_rhyGene.txt', row.names = F, quote = F, sep = '\t')
+write.table(tissue_specific_rhyGene, paste0(dir_pre, '02_tissue_sharing_rhyGene/tissue_specific_rhyGene.txt'), row.names = F, quote = F, sep = '\t')
 
 r$rhyGene <- factor(r$rhyGene, levels = c(gene_order1, gene_order))
 gene.rank <- data.frame(rhyGene = levels(r$rhyGene), rank = 1:length(levels(r$rhyGene)))
@@ -470,23 +512,28 @@ p <- ggplot(data = r, aes(x = rank, y = tissue, fill = as.character(yorn))) +
   geom_vline(xintercept = nrow(filter(common, Tissue.num >= 2)))
 p
 
-plot.outdir <- paste0(dir, cat, '13_Figures/02_tissue_sharing_rhyGene/')
+plot.outdir <- paste0(plot_dir_pre, '02_tissue_sharing_rhyGene/')
 if (!file.exists(plot.outdir)) {dir.create(plot.outdir, recursive = TRUE)}
 pdf(paste0(plot.outdir, 'tissue_sharing_rhyGene.pdf'), width = 5, height = 5.2, useDingbats = F)
 print(p, vp=viewport(.9, .9, x = .5, y = .5))
 dev.off()
 
 ## get tissue_specific_rhyGene.num
-tissue_specific_rgene <- fread('13_Results/02_tissue_sharing_rhyGene/tissue_specific_rhyGene.txt')
+tissue_specific_rgene <- fread(paste0(dir_pre, '02_tissue_sharing_rhyGene/tissue_specific_rhyGene.txt'))
 a <- as.data.frame(table(tissue_specific_rgene$tissue))
 names(a) <- c('tissue', 'tissue_specific_rhyGene.num')
-head(a)
 
+# number in fig2b, tissue specific rhyGene number
+a$tissue_specific_rhyGene.num[a$tissue == 'Liver']
+# 394
+a$tissue_specific_rhyGene.num[a$tissue == 'Heart-LeftVentricle']
+#  182
 ####################################################################################################
 #
 #                                               Figure 2c-g. phase distribution
 #
 ####################################################################################################
+setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
 dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/"
 
@@ -494,15 +541,15 @@ file <- list.dirs(paste0(dir, cat, '00_rQTL_mapping/00_Genotype'))
 tissue <- gsub(paste0(dir, cat, '00_rQTL_mapping/00_Genotype/'), '', file)[-1]
 
 
-outdir <- '13_Results/03_rhyGene_phase/rhyGene_phase_12h_interval/'
+outdir <- paste0(dir_pre, '03_rhyGene_phase/rhyGene_phase_12h_interval/')
 dir.create(outdir, recursive = TRUE)
-dir.create('13_Figures/03_rhyGene_phase/', recursive = TRUE)
+dir.create(paste0(plot_dir_pre, '03_rhyGene_phase/'), recursive = TRUE)
 
 all <- c()
-pdf(paste0('./13_Figures/03_rhyGene_phase/all_catagory_distribution.pdf'))
+pdf(paste0(plot_dir_pre, '03_rhyGene_phase/all_catagory_distribution.pdf'))
 for(i in 1:length(tissue)){
   
-  tmp <- fread(paste0(dir, cat, '13_Results/00_all_rhyQTL/', tissue[i], '.txt'))
+  tmp <- fread(paste0(dir_pre, '00_all_rhyQTL/', tissue[i], '.txt'))
   tmp$phase <- apply(select(tmp, contains("phase"), max_amp_idx), 1, function(x) (x[x[3]]))
   mean.phase <- as.data.frame(tmp %>% group_by(gene) %>% summarise(mean.phase = median(phase)))
   
@@ -518,11 +565,21 @@ for(i in 1:length(tissue)){
   print(ggplot(data = mean.phase, aes(x = mean.phase)) + geom_density() + theme_minimal() + ggtitle(tissue))
 }
 dev.off()  
-write.table(all, '13_Results/03_rhyGene_phase/all.tissue.rhyGene.phase.txt', quote = F, sep = '\t', row.names = F, col.names = F)  
+write.table(all, (paste0(dir_pre, '03_rhyGene_phase/all.tissue.rhyGene.phase.txt')), quote = F, sep = '\t', row.names = F, col.names = F)  
+
+
+# number in fig2d
+tissue <- 'Liver'
+am <- fread(paste0(outdir, tissue, '.AM.rhyGene.txt'))
+nrow(am)
+# 1927
+pm <- fread(paste0(outdir, tissue, '.PM.rhyGene.txt'))
+nrow(pm)
+# 2031
 
 
 ############## plot all tissue in one figure ###############################
-all <- fread('13_Results/03_rhyGene_phase/all.tissue.rhyGene.phase.txt')
+all <- fread(paste0(dir_pre, '03_rhyGene_phase/all.tissue.rhyGene.phase.txt'))
 names(all) <- c('gene', 'mean.phase', 'name', 'tissue')
 color <- fread('Data/color_annotation_v3.txt')
 
@@ -537,12 +594,12 @@ ggplot(data = filter(all, tissue != 'Brain-Substantianigra'), aes(x = mean.phase
 
 ###################################################### PLOT all class of tissues ####################################
 levels(all$tissue)
-all <- fread('13_Results/03_rhyGene_phase/all.tissue.rhyGene.phase.txt')
+all <- fread(paste0(dir_pre, '03_rhyGene_phase/all.tissue.rhyGene.phase.txt'))
 names(all) <- c('gene', 'mean.phase', 'name', 'tissue')
 color <- fread('Data/color_annotation_v3.txt')
 all <- filter(all, tissue != 'Brain-Substantianigra')
 
-outdir <- paste0(dir, cat, '13_Figures/03_rhyGene_phase/')
+outdir <- paste0(plot_dir_pre, '03_rhyGene_phase/')
 for(x in unique(color$Class)[unique(color$Class) !=  "Cells"]){
   
   tmp <- filter(all, tissue %in% color$tissue_rQTL[color$Class == x])
@@ -563,7 +620,7 @@ for(x in unique(color$Class)[unique(color$Class) !=  "Cells"]){
   dev.off()
 }
 
-outdir <- paste0(dir, cat, '13_Figures/03_rhyGene_phase/')
+outdir <- paste0(plot_dir_pre, '03_rhyGene_phase/')
 for(x in unique(color$Class)[unique(color$Class) !=  "Cells"]){
   
   tmp <- filter(all, tissue %in% color$tissue_rQTL[color$Class == x])
@@ -598,7 +655,7 @@ for(x in unique(color$Class)[unique(color$Class) !=  "Cells"]){
   tmp$FullName <- factor(tmp$FullName, levels = tmp$FullName)
   tmp
   
-  pdf(paste0('./13_Figures/03_rhyGene_phase/all.class.', gsub('/', '', x),'_annot_font.pdf'), width = 5, height = 2, useDingbats = F)
+  pdf(paste0(plot_dir_pre, '03_rhyGene_phase/all.class.', gsub('/', '', x),'_annot_font.pdf'), width = 5, height = 2, useDingbats = F)
   print(
     
     ggplot(data = tmp, aes(x = x, y = y)) + geom_point() +
@@ -621,7 +678,7 @@ for(x in unique(color$Class)[unique(color$Class) !=  "Cells"]){
 
 
 ################################## plot phase distribution in liver tissue ###################################################
-pdf(paste0('./13_Figures/03_rhyGene_phase/Liver.pdf'), width = 2, height = 2, useDingbats = F)
+pdf(paste0(plot_dir_pre, '03_rhyGene_phase/Liver.pdf'), width = 2, height = 2, useDingbats = F)
 print(
   ggplot(data = filter(all, tissue == 'Liver'), aes(x = mean.phase)) + geom_density(color = color$ColorPlot[match('Liver', color$tissue_rQTL)]) + 
     coord_polar() + theme_minimal() +
@@ -647,42 +704,51 @@ dev.off()
 
 
 #########################################  skin tissues ########################################
-
 # skin AM rhyGene compare
-m.1 <- fread('13_Results/03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-SunExposed_Lowerleg.AM.rhyGene.txt', header = F)
-m.2 <- fread('13_Results/03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-NotSunExposed_Suprapubic.AM.rhyGene.txt', header = F)
+m.1 <- fread(paste0(dir_pre, '03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-SunExposed_Lowerleg.AM.rhyGene.txt'), header = F)
+m.2 <- fread(paste0(dir_pre, '03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-NotSunExposed_Suprapubic.AM.rhyGene.txt'), header = F)
 
 m.common.am <- intersect(m.1$V1, m.2$V1)
 sun.unique.am <- setdiff(m.1$V1, m.common.am)
 no.sun.unique.am <- setdiff(m.2$V1, m.common.am)
 
-dir.create('13_Results/03_rhyGene_phase/skin/', recursive = TRUE)
-write.table(m.common.am, '13_Results/03_rhyGene_phase/skin/Skin-AM-common-rhyGene.txt', 
+outdir <- paste0(dir_pre, '03_rhyGene_phase/skin/')
+dir.create(outdir, recursive = TRUE)
+write.table(m.common.am, paste0(outdir, 'Skin-AM-common-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
-write.table(sun.unique.am, '13_Results/03_rhyGene_phase/skin/Skin-AM-SunExposed-unique-rhyGene.txt', 
+write.table(sun.unique.am,  paste0(outdir, 'Skin-AM-SunExposed-unique-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
-write.table(no.sun.unique.am, '13_Results/03_rhyGene_phase/skin/Skin-AM-Nosun-unique-common-rhyGene.txt', 
+write.table(no.sun.unique.am,  paste0(outdir, 'Skin-AM-Nosun-unique-common-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
 
+# number in fig2f
 length(m.common.am)
+# 655
 length(sun.unique.am)
+# 486
 length(no.sun.unique.am)
+# 576
 
 # skin PM rhyGene compare
-m.1 <- fread('13_Results/03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-SunExposed_Lowerleg.PM.rhyGene.txt', header = F)
-m.2 <- fread('13_Results/03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-NotSunExposed_Suprapubic.PM.rhyGene.txt', header = F)
+m.1 <- fread(paste0(dir_pre, '03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-SunExposed_Lowerleg.PM.rhyGene.txt'), header = F)
+m.2 <- fread(paste0(dir_pre, '03_rhyGene_phase/rhyGene_phase_12h_interval/Skin-NotSunExposed_Suprapubic.PM.rhyGene.txt'), header = F)
 
 m.common.pm <- intersect(m.1$V1, m.2$V1)
 sun.unique.pm <- setdiff(m.1$V1, m.common.pm)
 no.sun.unique.pm <- setdiff(m.2$V1, m.common.pm)
 
+# number in fig2f
 length(m.common.pm)
+# 373
 length(sun.unique.pm)
+# 268
 length(no.sun.unique.pm)
+# 431
 
-write.table(m.common.pm, '13_Results/03_rhyGene_phase/skin/Skin-PM-common-rhyGene.txt', 
+write.table(m.common.pm, paste0(dir_pre, '03_rhyGene_phase/skin/Skin-PM-common-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
-write.table(sun.unique.pm, '13_Results/03_rhyGene_phase/skin/Skin-PM-SunExposed-unique-rhyGene.txt', 
+write.table(sun.unique.pm, paste0(dir_pre, '03_rhyGene_phase/skin/Skin-PM-SunExposed-unique-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
-write.table(no.sun.unique.pm, '13_Results/03_rhyGene_phase/skin/Skin-PM-Nosun-unique-common-rhyGene.txt', 
+write.table(no.sun.unique.pm, paste0(dir_pre, '03_rhyGene_phase/skin/Skin-PM-Nosun-unique-common-rhyGene.txt'), 
             sep = '\t', quote = F, row.names = F, col.names = F)
+
