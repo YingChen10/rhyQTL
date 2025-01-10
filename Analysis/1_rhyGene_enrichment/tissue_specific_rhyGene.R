@@ -100,19 +100,4 @@ print(p2, vp=viewport(1, .3, x = .5, y = .5))
 print(p3, vp=viewport(1, .3, x = .5, y = .2))
 dev.off()  
 
-sample.size <- fread('F:/Projects/Project03_human_circadian/rQTL/cis_QTL/Data/00_sample_size_with_phenotype.txt')
 
-
-ggplot(data = median, aes(x = tissue, y = median)) + 
-  geom_col(fill = 'skyblue', color = 'black') + theme +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-
-
-ggplot(data = result, aes(x = num)) + 
-  geom_histogram(fill = 'skyblue', color = 'black', binwidth = 3) +
-  facet_wrap( ~ tissue, ncol = 5, scales = "free_y") + theme
-
-
-ggplot(data = result, aes(x = num)) + 
-  geom_histogram(fill = 'skyblue', color = 'black') + theme
