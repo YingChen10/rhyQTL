@@ -7,7 +7,7 @@ suppressMessages(library("dryR"))
 suppressMessages(library("lmtest"))
 
 ################## parameters ###########################
-dir <- "/N/scratch/cc123/gwas/rQTL/"
+dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/"
 
 args <- commandArgs(trailingOnly = TRUE)
