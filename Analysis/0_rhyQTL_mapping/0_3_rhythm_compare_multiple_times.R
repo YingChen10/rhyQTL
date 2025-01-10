@@ -1,4 +1,3 @@
-
 ############################################################ 
 
 #####   3. downsample mutiple times to compare rhythm  #####
@@ -15,18 +14,14 @@ suppressMessages(library("dryR"))
 library(DescTools)
 
 ############################# parameters #########################
-dir <- "Projects/rQTL/"
+dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/00_rQTL_mapping/"
 
 args <- commandArgs(trailingOnly = TRUE)
 tissue <- args[1]
 pos_file <- args[2]
 
-# e.g.
-# tissue <- 'Brain-Hippocampus'
-# pos_file <- 'split_pos_aa'
-
-indir1 <- paste0(dir, cat, '01_Rhythm_regression_filter/', tissue, '/')
+indir1 <- paste0(dir, cat, '01_Rhythm_regression/', tissue, '/')
 indir2 <- paste0(dir, cat, '02_Rhythm_compare/', tissue, '/')
 outdir <- paste0(dir, cat, '03_Rhythm_compare_multiple_times', '/', tissue, '/')
 logoutdir <- paste0(dir, 'cis_QTL/Log/03_Rhythm_compare_multiple_times/', tissue, '/')
@@ -39,7 +34,8 @@ if (!file.exists(logoutdir)) {dir.create(logoutdir)}
 start <- Sys.time()
 write.table(start, paste0(logoutdir, pos_file), sep = '\t', quote = F, row.names = F, col.names = F)
 
-
+# tissue <- 'Brain-Hippocampus'
+# pos_file <- 'split_pos_aa'
 
 
 ############################ function ###########################
@@ -65,12 +61,10 @@ filter.result <- read.table(paste0(indir2, pos_file), header = T)
 # input time information
 time <- fread(paste0(dir, 'GTEx_donor_time_science.txt'))
 
-# # input expression file
-expression <- fread(paste0(dir,'GTEx_nor_expression/',tissue, '.txt'))
-expression <- as.data.frame(expression)
-expression <- expression[,1:(ncol(expression) - 34)]
-expression$EnsemblID <- sapply(strsplit(expression$EnsemblID, '_'), "[", 1)
-names(expression)[2:ncol(expression)] <- sapply(strsplit(names(expression)[2:ncol(expression)], '\\.'), "[", 2)
+# import expression file
+expression <- read.table(paste0(dir,'00_data/CPM_covariate_remove/', tissue, '.txt'), header = T)
+names(expression) <- str_split_fixed(names(expression), '\\.', 2)[ ,2]
+expression$EnsemblID <- str_split_fixed(row.names(expression), '_', 2)[ ,1]
 
 
 ######################## Main ###############################
@@ -134,9 +128,9 @@ compare.list <- lapply(1:nrow(filter.result), function(i){
 compare.result <- as.data.frame(do.call(rbind, compare.list))
 write.table(compare.result, paste0(outdir, pos_file), sep = '\t', quote = F, row.names = F)
 
-# exclude chosen_model 1 and 4 
 write.table(filter(compare.result, chosen_model != 1 & chosen_model != 4), paste0(outdir, pos_file, '.filter'), sep = '\t', quote = F, row.names = F)
 
 
 a <- data.frame(tissue = tissue, file = pos_file, s = start, n = nrow(filter.result), e = Sys.time())
-write.table(a, paste0(logoutdir, pos_file), sep = '\t', quote = F, row.names = F, col.names = F)
+
+write.table(a, paste0(logoutdir, pos_file, '.complete'), sep = '\t', quote = F, row.names = F, col.names = F)

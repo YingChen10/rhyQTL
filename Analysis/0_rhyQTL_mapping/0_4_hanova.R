@@ -117,7 +117,7 @@ tissue <- args[1]
 pos_file <- args[2]
 
 
-#dir <- '/N/scratch/cc123/gwas/rQTL/'
+
 dir <- '/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/'
 cat <- 'cis_QTL/'
 outdir <- paste0(dir, cat, '00_rQTL_mapping/04_hanova/')
@@ -136,11 +136,9 @@ write.table(a, paste0(logoutdir, tissue, '/', pos_file), quote = F, row.names = 
 time <- fread(paste0(dir, 'GTEx_donor_time_science.txt'))
 
 # import expression file
-expression <- fread(paste0(dir,'GTEx_nor_expression/',tissue, '.txt'))
-expression <- as.data.frame(expression)
-expression <- expression[,1:(ncol(expression) - 34)]
-expression$EnsemblID <- sapply(strsplit(expression$EnsemblID, '_'), "[", 1)
-names(expression)[2:ncol(expression)] <- sapply(strsplit(names(expression)[2:ncol(expression)], '\\.'), "[", 2)
+expression <- read.table(paste0(dir,'00_data/CPM_covariate_remove/', tissue, '.txt'), header = T)
+names(expression) <- str_split_fixed(names(expression), '\\.', 2)[ ,2]
+expression$EnsemblID <- str_split_fixed(row.names(expression), '_', 2)[ ,1]
 
 # import genotype information
 geno <- readRDS(paste0(dir, cat, '00_rQTL_mapping/00_Genotype/', tissue, '/', pos_file, '.rds'))

@@ -14,19 +14,20 @@ suppressMessages(library("dryR"))
 suppressMessages(library("lmtest"))
 
 ############################# parameters #########################
-dir <- "rQTL/"
+dir <- "/N/scratch/cc123/gwas/rQTL/"
+#dir <- "/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/"
 cat <- "cis_QTL/00_rQTL_mapping/"
 
 args <- commandArgs(trailingOnly = TRUE)
 tissue <- args[1]
 pos_file <- args[2]
 
-indir <- paste0(dir, cat, '01_Rhythm_regression_filter/', tissue, '/')
+indir <- paste0(dir, cat, '01_Rhythm_regression/', tissue, '/')
 outdir <- paste0(dir, cat, '02_Rhythm_compare/', tissue, '/')
 logoutdir <- paste0(dir, 'cis_QTL/Log/02_Rhythm_compare/', tissue, '/')
 
-if (!file.exists(outdir)) {dir.create(outdir)}
-if (!file.exists(logoutdir)) {dir.create(logoutdir)}
+if (!file.exists(outdir)) {dir.create(outdir, recursive = TRUE)}
+if (!file.exists(logoutdir)) {dir.create(logoutdir, recursive = TRUE)}
 
 # tissue <- 'Brain-Hippocampus'
 # pos_file <- 'split_pos_aa'
@@ -35,7 +36,6 @@ start <- Sys.time()
 write.table(start, paste0(logoutdir, pos_file), sep = '\t', quote = F, row.names = F, col.names = F)
 
 ############################ function ###########################
-# The genotype group with the more samples was subsampled to match the sample size of the smaller group
 random.sample.test <- function(tmp, num){
   
   random_sample <- sample(row.names(filter(tmp, genotype == num$Var1[1])), size = num$Freq[2], replace = FALSE)
@@ -52,19 +52,16 @@ random.sample.test <- function(tmp, num){
 # import genotype information
 all_results <-  readRDS(paste0(indir, pos_file, '.geno.rds'))
 
-# import thy harmonic regression fit result
+# import thy fit filter
 filter.result <- readRDS(paste0(indir, pos_file, '.rds'))
 
 # input time information
 time <- fread(paste0(dir, 'GTEx_donor_time_science.txt'))
 
-# # input expression file
-expression <- fread(paste0(dir,'GTEx_nor_expression/',tissue, '.txt'))
-expression <- as.data.frame(expression)
-expression <- expression[,1:(ncol(expression) - 34)]
-expression$EnsemblID <- sapply(strsplit(expression$EnsemblID, '_'), "[", 1)
-names(expression)[2:ncol(expression)] <- sapply(strsplit(names(expression)[2:ncol(expression)], '\\.'), "[", 2)
-
+# import expression file
+expression <- read.table(paste0(dir,'00_data/CPM_covariate_remove/', tissue, '.txt'), header = T)
+names(expression) <- str_split_fixed(names(expression), '\\.', 2)[ ,2]
+expression$EnsemblID <- str_split_fixed(row.names(expression), '_', 2)[ ,1]
 
 ######################## Main ####################################
 dryR.results.list <- list()
@@ -111,12 +108,13 @@ for(i in 1:length(filter.result)){
 }
 
 dryR.results <- as.data.frame(do.call(rbind, dryR.results.list))
+
 dryR.results <- filter(dryR.results, chosen_model != 1 & chosen_model != 4)
 write.table(dryR.results, paste0(outdir, pos_file), sep = '\t', quote = F, row.names = F)
 
 a <- data.frame(tissue = tissue, file = pos_file, s = start, n = length(all_results), e = Sys.time())
 
-write.table(a, paste0(logoutdir, pos_file), sep = '\t', quote = F, row.names = F, col.names = F)
+write.table(a, paste0(logoutdir, pos_file, '.complete'), sep = '\t', quote = F, row.names = F, col.names = F)
 
 
 
