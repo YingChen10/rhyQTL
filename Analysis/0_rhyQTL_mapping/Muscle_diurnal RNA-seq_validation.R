@@ -2,6 +2,7 @@ rm(list=ls())
 library(data.table)
 library(tidyverse)
 
+setwd('/workspace/rsrch1/ychen/Projects/Project03_human_circadian/rQTL/cis_QTL/')
 
 #############################################
 #
@@ -294,8 +295,7 @@ para.2.validate <- filter(para.2, cir.compare == 'diff_circadian')
 table(para.2$cir.compare)
 
 # # of ID and gene detected 
-# original 1387, 292
-# new  2366 229
+nrow(para.2)
 length(unique(para.2$ID))
 length(unique(para.2$gene))
 
@@ -303,9 +303,7 @@ length(unique(para.2$gene))
 length(unique(para.2$ID[para.2$cir.compare == 'no_circadian']))/length(unique(para.2$ID))
 
 # # of ID and gene validated
-# original 754 , 225
-# new 1341 193
-# 
+nrow(para.2.validate)
 length(unique(para.2.validate$ID))
 length(unique(para.2.validate$gene))
 
@@ -313,4 +311,5 @@ length(unique(para.2.validate$gene))
 length(unique(para.2.validate$gene))/length(unique(para.2$gene))
 # validated rhyQTL ratio
 length(unique(para.2.validate$ID))/length(unique(para.2$ID))
+
 
