@@ -58,7 +58,7 @@ all <- mclapply(tissue.list, function(tissue){
   file.tmp <- as.data.frame(do.call(rbind, file.tmp)) 
   file.tmp <- filter(file.tmp, gtest.p.value < 0.05)
   file.tmp$p_adj <- p.adjust(file.tmp$HANOVA.norm, method = "BH")
-  file.tmp <- filter(file.tmp, p_adj < 0.01)
+  file.tmp <- filter(file.tmp, p_adj < 0.05)
   
   file.tmp$tissue <- tissue
   
