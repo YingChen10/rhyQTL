@@ -6,7 +6,7 @@ for chr in {1..22}
 do
 
 
-samtools faidx GRCh38.primary_assembly.genome.fa chr10 > ${chr}.fa
+samtools faidx GRCh38.primary_assembly.genome.fa chr${chr} > ${chr}.fa
 # scan on genome
 fimo -o fimo_out_${chr} homer_motif_meme.txt ${chr}.fa
 # format
