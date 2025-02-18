@@ -26,6 +26,7 @@ R and dependent packages
 - `tidyverse (2.0.0)`
 - `dryR (1.0.0)`
 - `lmtest (0.9.40)`
+- `coloc v5.2.3`
 
 External software
 - `LDSC (v1.0.1)`
@@ -33,6 +34,7 @@ External software
 - `tabix (v1.7)`
 - `bedtools (>= v2.30.0)`
 - `samtools (>= v1.10)`
+
 
 ## Authors
 Ying Chen, Panpan Liu, Aniko Sabo, Dongyin Guan (Baylor College of Medicine)
