@@ -87,8 +87,7 @@ for(line in  1:nrow(pos)){
   
 
   # retrieve SNVs in TSS-1M flanking region  for each gene
-  output <- system(paste0("/geode2/home/u020/cc123/BigRed200/miniconda3/bin/tabix ", dir, "GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.SHAPEIT2_phased.MAF01.hwe_MAF059.vcf.gz ", region), intern=TRUE)
-  # output <- system(paste0("/workspace/rsrch1/ychen/miniconda3/bin/tabix ", dir, "GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.SHAPEIT2_phased.MAF01.hwe_MAF059.vcf.gz ", region), intern=TRUE)
+  output <- system(paste0("/workspace/rsrch1/ychen/miniconda3/bin/tabix ", dir, "GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.SHAPEIT2_phased.MAF01.hwe_MAF059.vcf.gz ", region), intern=TRUE)
  
   snv <- read.table(textConnection(output), header=F, sep="\t")
   names(snv) <- as.character(head)
