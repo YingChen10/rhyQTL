@@ -2,5 +2,5 @@
 
 
 ```bash
-> bash LD_block_number_calculate.s
+> bash LD_block_number_calculate.sh
 ``` 
